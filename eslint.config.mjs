@@ -7,8 +7,12 @@ export default [
     ignores: [
       '**/dist/**',
       '**/node_modules/**',
+      '*.config.js',
+      '*.config.cjs',
+      '*.config.mjs',
+      'prettier.config.*',
       'commitlint.config.cjs',
-      '.prettierrc',
+      'eslint.config.mjs',
       'pnpm-lock.yaml',
     ],
   },
