@@ -1,13 +1,18 @@
 {
-  "name": "matches-service",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@apps/matches-service",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@packages/shared": "workspace:*",
+    "express": "^4.19.2",
+    "zod": "^3.25.0"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.16.0"
+  "devDependencies": {
+    "@types/express": "^4.17.21"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "test": "node -e \"console.log('no tests yet')\""
+  }
 }
