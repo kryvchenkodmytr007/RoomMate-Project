@@ -1,13 +1,14 @@
 {
-  "name": "shared",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "name": "@packages/shared",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.16.0"
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node -e \"console.log('no tests yet')\""
+  }
 }

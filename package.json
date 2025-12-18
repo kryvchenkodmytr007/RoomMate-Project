@@ -9,7 +9,15 @@
     "format": "prettier . --check",
     "format:write": "prettier . --write",
     "lint": "eslint .",
-    "typecheck": "tsc -p tsconfig.base.json --noEmit"
+    "typecheck": "tsc -p tsconfig.base.json --noEmit",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "build": "pnpm -r build",
+    "dev:profiles": "pnpm -C apps/profiles-service dev",
+    "dev:matches": "pnpm -C apps/matches-service dev"
   },
   "keywords": [],
   "author": "",
@@ -20,14 +28,22 @@
     "@commitlint/cli": "^20.2.0",
     "@commitlint/config-conventional": "^20.2.0",
     "@eslint/js": "^9.39.2",
+    "@types/express": "^5.0.6",
     "@types/node": "^25.0.3",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
+    "prisma": "^7.2.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^7.2.0",
+    "express": "^5.2.1",
+    "zod": "^4.2.1"
   },
   "lint-staged": {
     "*.{ts,tsx,js,json,md,yml,yaml}": [

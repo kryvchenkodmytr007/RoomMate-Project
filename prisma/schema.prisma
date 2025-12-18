@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MatchStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  name      String
+  city      String
+  budgetMin Int
+  budgetMax Int
+  lifestyle String
+  createdAt DateTime @default(now())
+
+  fromRequests MatchRequest[] @relation("FromProfile")
+  toRequests   MatchRequest[] @relation("ToProfile")
+}
+
+model MatchRequest {
+  id            String      @id @default(uuid())
+  fromProfileId String
+  toProfileId   String
+  message       String?
+  status        MatchStatus @default(PENDING)
+  createdAt     DateTime    @default(now())
+
+  fromProfile Profile @relation("FromProfile", fields: [fromProfileId], references: [id], onDelete: Cascade)
+  toProfile   Profile @relation("ToProfile", fields: [toProfileId], references: [id], onDelete: Cascade)
+
+  @@index([fromProfileId])
+  @@index([toProfileId])
+  @@index([status])
+}

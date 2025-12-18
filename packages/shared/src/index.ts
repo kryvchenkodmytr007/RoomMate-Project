@@ -1,1 +1,1 @@
-export const shared = true;
+export { prisma } from './db/prisma';
