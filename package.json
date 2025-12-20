@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "ENV_FILE=.env.test NODE_ENV=test vitest",
+    "test": "pnpm test:setup && ENV_FILE=.env.test NODE_ENV=test vitest run",
     "prepare": "husky",
     "format": "prettier . --check",
     "format:write": "prettier . --write",
@@ -18,7 +18,10 @@
     "build": "pnpm -r build",
     "dev:profiles": "pnpm -C apps/profiles-service dev",
     "dev:matches": "pnpm -C apps/matches-service dev",
-    "test:setup": "pnpm db:up && ENV_FILE=.env.test pnpm prisma migrate reset --force && ENV_FILE=.env.test pnpm prisma generate && pnpm -C packages/shared build"
+    "test:setup": "pnpm db:up && ENV_FILE=.env.test pnpm prisma migrate reset --force && ENV_FILE=.env.test pnpm prisma generate && pnpm -C packages/shared build",
+    "test:e2e": "pnpm test:setup && pnpm build && ENV_FILE=.env.test NODE_ENV=test vitest run tests/e2e",
+    "test:mutation": "pnpm test:setup && pnpm stryker run",
+    "test:all": "pnpm test:setup && pnpm build && ENV_FILE=.env.test NODE_ENV=test vitest run"
   },
   "keywords": [],
   "author": "",
@@ -43,7 +46,8 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.1",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "@stryker-mutator/core": "^9.0.0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
