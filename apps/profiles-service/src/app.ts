@@ -1,9 +1,11 @@
 import express from 'express';
 import { z } from 'zod';
-import { prisma } from '@packages/shared';
+import { prisma, budgetRangeHttpError } from '@packages/shared';
 
 export const app = express();
 app.use(express.json());
+
+app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'profiles-service' }));
 
 const CreateProfileSchema = z.object({
   name: z.string().min(1).max(100),
@@ -19,10 +21,8 @@ app.post('/profiles', async (req, res) => {
     return res.status(400).json({ message: 'Validation error', issues: parsed.error.issues });
   }
 
-  const { budgetMin, budgetMax } = parsed.data;
-  if (budgetMin > budgetMax) {
-    return res.status(400).json({ message: 'budgetMin must be <= budgetMax' });
-  }
+  const rangeErr = budgetRangeHttpError(parsed.data.budgetMin, parsed.data.budgetMax);
+  if (rangeErr) return res.status(rangeErr.status).json(rangeErr.body);
 
   const profile = await prisma.profile.create({ data: parsed.data });
   return res.status(201).json(profile);

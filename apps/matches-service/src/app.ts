@@ -1,10 +1,12 @@
 import express from 'express';
 import { z } from 'zod';
-import { prisma } from '@packages/shared';
+import { prisma, differentIdsHttpError } from '@packages/shared';
 import { MatchStatus } from '@prisma/client';
 
 export const app = express();
 app.use(express.json());
+
+app.get('/health', (_req, res) => res.json({ status: 'ok', service: 'matches-service' }));
 
 const CreateMatchRequestSchema = z.object({
   fromProfileId: z.string().uuid(),
@@ -22,10 +24,10 @@ app.post('/matches/request', async (req, res) => {
     return res.status(400).json({ message: 'Validation error', issues: parsed.error.issues });
   }
 
+  const idsErr = differentIdsHttpError(parsed.data.fromProfileId, parsed.data.toProfileId);
+  if (idsErr) return res.status(idsErr.status).json(idsErr.body);
+
   const { fromProfileId, toProfileId } = parsed.data;
-  if (fromProfileId === toProfileId) {
-    return res.status(409).json({ message: 'fromProfileId must differ from toProfileId' });
-  }
 
   const [from, to] = await Promise.all([
     prisma.profile.findUnique({ where: { id: fromProfileId } }),
