@@ -14,6 +14,8 @@ export default [
       'commitlint.config.cjs',
       'eslint.config.mjs',
       'pnpm-lock.yaml',
+      'reports/**',
+      'stryker.conf.cjs',
     ],
   },
   js.configs.recommended,

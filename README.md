@@ -1,40 +1,41 @@
 # RoomMate Match
 
-RoomMate Match — бекенд у форматі monorepo з двох сервісів для керування профілями кандидатів на спільне проживання та обробки матч-запитів між ними.
+RoomMate Match — бекенд у форматі **monorepo** з двох сервісів для керування профілями людей та обробки match-запитів між ними.
 
 ## Ідея
 
-Користувач створює профіль із базовими параметрами (місто, бюджет, стиль життя). Інший користувач може надіслати запит на матч, який власник другого профілю може прийняти або відхилити.
+Користувач створює профіль із базовими параметрами (місто, бюджет, стиль життя). Інший користувач може надіслати запит на match, який власник другого профілю може прийняти або відхилити.
 
-## Сервіси та відповідальність
+## Сервіси
 
 - **Profiles Service** — створення та перегляд профілів.
-- **Matches Service** — створення та обробка матч-запитів між профілями.
-- **packages/shared** — спільні DTO та валідація (Zod).
+- **Matches Service** — створення та обробка match-запитів між профілями.
+- **packages/shared** — спільний Prisma-клієнт + чисті доменні правила (unit-тести).
 
-## Мінімальний API (Lab 2)
+## Мінімальний API
 
 ### Profiles Service
 
+- `GET /health` — health-check
 - `POST /profiles` — створити профіль
 - `GET /profiles` — список профілів
 - `GET /profiles/:id` — профіль за id
 
 ### Matches Service
 
-- `POST /matches/request` — створити матч-запит
-- `GET /matches` — список матч-запитів (опційно `?profileId=...`)
+- `GET /health` — health-check
+- `POST /matches/request` — створити match-запит
+- `GET /matches` — список match-запитів (опційно `?profileId=...`)
 - `PATCH /matches/:id/status` — змінити статус (`PENDING | ACCEPTED | REJECTED`)
 
 Детальні приклади: `docs/scenarios.md`.
 
 ## Діаграми (Mermaid)
 
-- Компонентна та ER-діаграма збережені як Mermaid-блоки у:
-  - `docs/architecture.md`
-  - `docs/data-model.md`
+Mermaid рендериться автоматично в GitHub Markdown (у веб-інтерфейсі репозиторію).
 
-> Mermaid рендериться автоматично в GitHub Markdown (у веб-інтерфейсі репозиторію).
+- `docs/architecture.md`
+- `docs/data-model.md`
 
 ## Структура репозиторію
 
@@ -48,20 +49,32 @@ docs/
   architecture.md
   data-model.md
   scenarios.md
-infra/
+  testing-report.md
+prisma/
 ```
 
-## Як запустити локально
+## Локальний запуск
 
-> Для Lab 2 достатньо базової ініціалізації. База даних/Prisma підключається на наступних лабах.
-
-Встановити залежності:
+1. Встановити залежності:
 
 ```bash
 pnpm install
 ```
 
-Запустити сервіси:
+2. Підняти PostgreSQL (Docker):
+
+```bash
+pnpm db:up
+```
+
+3. Міграції та Prisma Client:
+
+```bash
+pnpm prisma:migrate --name init
+pnpm prisma:generate
+```
+
+4. Запустити сервіси (у різних терміналах):
 
 ```bash
 pnpm dev:profiles
@@ -71,11 +84,37 @@ pnpm dev:matches
 ## Скрипти якості (Lab 1)
 
 - `pnpm format` — перевірка форматування
-- `pnpm lint` — лінт
-- `pnpm typecheck` — перевірка типів
+- `pnpm lint` — ESLint
+- `pnpm typecheck` — TypeScript
 
-## Документація
+## Тестування (Lab 5)
 
-- `docs/architecture.md` — архітектура, компоненти, шари + компонентна діаграма
-- `docs/data-model.md` — модель даних + ER-діаграма
-- `docs/scenarios.md` — API сценарії (приклади запитів/відповідей)
+- Підготовка тестової БД + міграції:
+
+```bash
+pnpm test:setup
+```
+
+- Unit + integration (Vitest):
+
+```bash
+pnpm test
+```
+
+- E2E (піднімає обидва сервіси як процеси):
+
+```bash
+pnpm test:e2e
+```
+
+- Мутаційне тестування (Stryker):
+
+```bash
+pnpm test:mutation
+```
+
+Звіт: `docs/testing-report.md`.
+
+## CI/CD (Lab 6)
+
+У репозиторії є GitHub Actions воркфлоу для CI (`.github/workflows/ci.yml`) та CD (`.github/workflows/cd.yml`).
