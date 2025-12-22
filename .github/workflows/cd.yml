@@ -1,0 +1,30 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy (Render deploy hooks)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy profiles-service
+        if: ${{ secrets.RENDER_DEPLOY_HOOK_PROFILES != '' }}
+        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_PROFILES }}"
+
+      - name: Deploy matches-service
+        if: ${{ secrets.RENDER_DEPLOY_HOOK_MATCHES != '' }}
+        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_MATCHES }}"
+
+      - name: Notice
+        run: |
+          echo "If deploy hooks are empty, set GitHub secrets: RENDER_DEPLOY_HOOK_PROFILES and RENDER_DEPLOY_HOOK_MATCHES"
