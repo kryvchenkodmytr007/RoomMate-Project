@@ -1,11 +1,16 @@
 /** @type {import('@stryker-mutator/api/core').StrykerOptions} */
 module.exports = {
-  mutate: ['packages/shared/src/logic/**/*.ts'],
+  mutate: [
+    'packages/shared/src/logic/*.ts',
+    '!packages/shared/src/logic/__tests__/**',
+    '!**/*.test.ts',
+    '!packages/shared/src/db/**',
+    '!packages/shared/src/httpErrors.ts',
+  ],
   testRunner: 'command',
   commandRunner: {
-    command: 'pnpm vitest run packages/shared/src/logic/**/*.test.ts',
+    command: 'pnpm -C packages/shared test:unit',
   },
-  reporters: ['progress', 'clear-text', 'html'],
+  reporters: ['html', 'clear-text', 'progress'],
   coverageAnalysis: 'off',
-  tempDirName: '.stryker-tmp',
 };

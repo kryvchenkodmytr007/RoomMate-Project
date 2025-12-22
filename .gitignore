@@ -1,33 +1,35 @@
-# dependencies
-node_modules/
+# deps
+node_modules
 
-# build
-dist/
-*.tsbuildinfo
+# builds
+dist
+build
+.turbo
+.cache
 
 # env
 .env
-.env.test
 .env.*.local
+.env.test
+.env.production
+.env.development
 
 # logs
-logs/
+logs
 *.log
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-# coverage / reports
-coverage/
-reports/
-.stryker-tmp/
-
-# OS / editor
+# OS / IDE
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
+.idea
+.vscode
 
-# misc
-*.tgz
+# test artifacts
+coverage
+reports
+.nyc_output
+.stryker-tmp
