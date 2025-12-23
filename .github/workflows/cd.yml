@@ -17,28 +17,22 @@ jobs:
     name: Deploy (Render deploy hooks)
     runs-on: ubuntu-latest
 
+    env:
+      RENDER_DEPLOY_HOOK_PROFILES: ${{ secrets.RENDER_DEPLOY_HOOK_PROFILES }}
+      RENDER_DEPLOY_HOOK_MATCHES: ${{ secrets.RENDER_DEPLOY_HOOK_MATCHES }}
+
     steps:
-      - name: Check deploy hooks
-        run: |
-          missing=0
-          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_PROFILES }}" ]; then
-            echo "::warning::RENDER_DEPLOY_HOOK_PROFILES is not set"
-            missing=1
-          fi
-          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK_MATCHES }}" ]; then
-            echo "::warning::RENDER_DEPLOY_HOOK_MATCHES is not set"
-            missing=1
-          fi
-
-          if [ "$missing" -eq 1 ]; then
-            echo "Deploy hooks are missing → skipping deploy."
-            exit 0
-          fi
-
       - name: Deploy profiles-service
-        if: ${{ secrets.RENDER_DEPLOY_HOOK_PROFILES }}
-        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_PROFILES }}"
+        if: ${{ env.RENDER_DEPLOY_HOOK_PROFILES != '' }}
+        run: curl -fsSL -X POST "$RENDER_DEPLOY_HOOK_PROFILES"
 
       - name: Deploy matches-service
-        if: ${{ secrets.RENDER_DEPLOY_HOOK_MATCHES }}
-        run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_MATCHES }}"
+        if: ${{ env.RENDER_DEPLOY_HOOK_MATCHES != '' }}
+        run: curl -fsSL -X POST "$RENDER_DEPLOY_HOOK_MATCHES"
+
+      - name: Notice
+        if: ${{ env.RENDER_DEPLOY_HOOK_PROFILES == '' || env.RENDER_DEPLOY_HOOK_MATCHES == '' }}
+        run: |
+          echo "Deploy hooks are missing. Set GitHub secrets:"
+          echo "- RENDER_DEPLOY_HOOK_PROFILES"
+          echo "- RENDER_DEPLOY_HOOK_MATCHES"
