@@ -3,6 +3,7 @@ name: CD
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,6 +18,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug
+        run: |
+          echo "ref=$GITHUB_REF"
+          echo "sha=$GITHUB_SHA"
+          echo "has_profiles_hook=${{ secrets.RENDER_DEPLOY_HOOK_PROFILES != '' }}"
+          echo "has_matches_hook=${{ secrets.RENDER_DEPLOY_HOOK_MATCHES != '' }}"
+
       - name: Deploy profiles-service
         if: ${{ secrets.RENDER_DEPLOY_HOOK_PROFILES != '' }}
         run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_PROFILES }}"
@@ -25,6 +33,10 @@ jobs:
         if: ${{ secrets.RENDER_DEPLOY_HOOK_MATCHES != '' }}
         run: curl -fsSL -X POST "${{ secrets.RENDER_DEPLOY_HOOK_MATCHES }}"
 
-      - name: Notice
+      - name: Notice (no hooks)
+        if: ${{ secrets.RENDER_DEPLOY_HOOK_PROFILES == '' && secrets.RENDER_DEPLOY_HOOK_MATCHES == '' }}
         run: |
-          echo "If deploy hooks are empty, set GitHub secrets: RENDER_DEPLOY_HOOK_PROFILES and RENDER_DEPLOY_HOOK_MATCHES"
+          echo "Deploy hooks are empty."
+          echo "Set GitHub secrets:"
+          echo "  RENDER_DEPLOY_HOOK_PROFILES"
+          echo "  RENDER_DEPLOY_HOOK_MATCHES"
