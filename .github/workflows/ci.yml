@@ -32,6 +32,9 @@ jobs:
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
+      - name: Prisma generate + build shared
+        run: pnpm prisma generate && pnpm -C packages/shared build
+
       - name: Format
         run: pnpm format
 
