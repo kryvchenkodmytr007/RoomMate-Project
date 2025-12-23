@@ -16,8 +16,6 @@ jobs:
   quality:
     name: Lint / Typecheck / Tests
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: 'postgresql://user:pass@localhost:5432/db'
 
     steps:
       - name: Checkout
@@ -25,17 +23,23 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          run_install: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'pnpm'
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
-      - name: Prisma generate + build shared
-        run: pnpm prisma generate && pnpm -C packages/shared build
+      - name: Generate Prisma Client
+        run: ENV_FILE=.env.test.example pnpm prisma generate
+
+      - name: Build shared (needed for @packages/shared types)
+        run: pnpm -C packages/shared build
 
       - name: Format
         run: pnpm format
@@ -45,6 +49,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Prepare test env file
+        run: cp .env.test.example .env.test
 
       - name: Integration + Unit tests
         run: pnpm test:setup && pnpm test
@@ -65,11 +72,14 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          run_install: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'pnpm'
 
       - name: Install deps
         run: pnpm install --frozen-lockfile
